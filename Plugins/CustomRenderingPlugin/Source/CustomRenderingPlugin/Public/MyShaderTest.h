@@ -38,6 +38,9 @@ class UMyShaderTestBlueprintLibrary : public UBlueprintFunctionLibrary
 		AActor * Actor,
 		FLinearColor MyColor,
 		UTexture* MyTexture,
-		FMyShaderParameterStruct MyShaderStructData
+		FMyShaderParameterStruct MyShaderParameter
 	);
+
+	UFUNCTION(BlueprintCallable, Category = "CustomRenderingPlugin", meta = (WorldContext = "WorldContextObject"))
+	static void DrawMyComputeShader(class UTextureRenderTarget2D* OutputRenderTarget, FMyShaderParameterStruct MyShaderParameter);
 };
