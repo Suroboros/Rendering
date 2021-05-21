@@ -2,6 +2,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "PipelineStateCache.h"
 #include "GlobalShader.h"
+#include "RenderGraph.h"
 
 #define LOCTEXT_NAMESPACE "CustomRenderingModul"
 
@@ -224,9 +225,13 @@ public:
 
 	virtual void ReleaseRHI() override
 	{
-		VertexDeclarationRHI->Release();
+		VertexDeclarationRHI.SafeRelease();
 	}
 };
+
+TGlobalResource<FQuadVertexBuffer> QuadVertex;
+TGlobalResource<FQuadIndexBuffer> QuadIndex;
+TGlobalResource<FTextureVertexDeclaration> VertexDeclaration;
 
 //-----------------------------
 // Blueprint
@@ -258,14 +263,14 @@ static void DrawMyShaderTestRenderTarget_RenderThread(FRHICommandListImmediate& 
 		TShaderMapRef<FMyShaderTestPS> PixelShader(GlobalShaderMap);
 
 		// Get Data
-		FQuadVertexBuffer quadVertex;
-		quadVertex.InitRHI();
-		FQuadIndexBuffer quadIndex;
-		quadIndex.InitRHI();
+		//FQuadVertexBuffer quadVertex;
+		//quadVertex.InitRHI();
+		//FQuadIndexBuffer quadIndex;
+		//quadIndex.InitRHI();
 
 		// Texture vertex
-		FTextureVertexDeclaration VertexDeclaration;
-		VertexDeclaration.InitRHI();
+		//FTextureVertexDeclaration VertexDeclaration;
+		//VertexDeclaration.InitRHI();
 
 		// Set the graphic pipeline state.
 		FGraphicsPipelineStateInitializer GraphicsPSOInit;
@@ -290,10 +295,10 @@ static void DrawMyShaderTestRenderTarget_RenderThread(FRHICommandListImmediate& 
 		VertexShader->SetParameters(RHICmdList, PixelShader.GetPixelShader(), MyColor, MyTexture, MyShaderUniformBuffer);
 		PixelShader->SetParameters(RHICmdList, PixelShader.GetPixelShader(), MyColor, MyTexture, MyShaderUniformBuffer);
 
-		RHICmdList.SetStreamSource(0, quadVertex.VertexBufferRHI, 0);
+		RHICmdList.SetStreamSource(0, QuadVertex.VertexBufferRHI, 0);
 
 		// Draw
-		RHICmdList.DrawIndexedPrimitive(quadIndex.IndexBufferRHI, 0, 0, 4, 0, 2, 1);
+		RHICmdList.DrawIndexedPrimitive(QuadIndex.IndexBufferRHI, 0, 0, 4, 0, 2, 1);
 	}
 	RHICmdList.EndRenderPass();
 }
