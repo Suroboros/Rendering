@@ -6,7 +6,7 @@
 
 #define LOCTEXT_NAMESPACE "CustomRenderingModul"
 
-IMPLEMENT_GLOBAL_SHADER_PARAMETER_STRUCT(FMyShaderParameterBuffer, "MyShaderUniformBuffer");
+//IMPLEMENT_GLOBAL_SHADER_PARAMETER_STRUCT(FMyShaderParameterBuffer, "MyShaderUniformBuffer");
 
 //-----------------------------
 // Global Shader Class
