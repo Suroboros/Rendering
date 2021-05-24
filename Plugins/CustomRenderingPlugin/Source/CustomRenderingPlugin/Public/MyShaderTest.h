@@ -27,6 +27,20 @@ struct FMyShaderParameterStruct
 		int32 ColorIndex;
 };
 
+//-----------------------------
+// Uniform Buffer(Const Buffer)
+//-----------------------------
+BEGIN_GLOBAL_SHADER_PARAMETER_STRUCT(FMyShaderParameterBuffer, )
+SHADER_PARAMETER(FVector4, MyColor1)
+SHADER_PARAMETER(FVector4, MyColor2)
+SHADER_PARAMETER(FVector4, MyColor3)
+SHADER_PARAMETER(FVector4, MyColor4)
+SHADER_PARAMETER(uint32, ColorIndex)
+END_GLOBAL_SHADER_PARAMETER_STRUCT()
+
+//-----------------------------
+// Blueprint Function
+//-----------------------------
 UCLASS(MinimalAPI, meta=(ScriptName="CustomRenderingLibary"))
 class UMyShaderTestBlueprintLibrary : public UBlueprintFunctionLibrary
 {

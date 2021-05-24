@@ -6,19 +6,7 @@
 
 #define LOCTEXT_NAMESPACE "CustomRenderingModul"
 
-//-----------------------------
-// Uniform Buffer(Const Buffer)
-//-----------------------------
-BEGIN_GLOBAL_SHADER_PARAMETER_STRUCT(FMyShaderParameterBuffer, )
-SHADER_PARAMETER(FVector4, MyColor1)
-SHADER_PARAMETER(FVector4, MyColor2)
-SHADER_PARAMETER(FVector4, MyColor3)
-SHADER_PARAMETER(FVector4, MyColor4)
-SHADER_PARAMETER(uint32, ColorIndex)
-END_GLOBAL_SHADER_PARAMETER_STRUCT()
-
-IMPLEMENT_GLOBAL_SHADER_PARAMETER_STRUCT(FMyShaderParameterBuffer, "MyShaderParameter");
-
+IMPLEMENT_GLOBAL_SHADER_PARAMETER_STRUCT(FMyShaderParameterBuffer, "MyShaderUniformBuffer");
 
 //-----------------------------
 // Global Shader Class

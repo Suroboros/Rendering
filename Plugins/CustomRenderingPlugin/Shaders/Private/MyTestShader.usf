@@ -14,19 +14,19 @@ void MainVS(in float4 InPosition : ATTRIBUTE0, in float2 InUV : ATTRIBUTE1, out 
 void MainPS(in float2 UV : TEXCOORD0, out float4 OutColor : SV_Target0)
 {
     OutColor = float4(SimpleTexture.Sample(SimpleTextureSampler, UV.xy).rgb, 1.0f);  
-    switch(MyShaderParameter.ColorIndex)
+    switch(MyShaderUniformBuffer.ColorIndex)
     {
     case 0:
-        OutColor *= MyShaderParameter.MyColor1;
+        OutColor *= MyShaderUniformBuffer.MyColor1;
         break;
     case 1:
-        OutColor *= MyShaderParameter.MyColor1;
+        OutColor *= MyShaderUniformBuffer.MyColor1;
         break;
     case 2:
-        OutColor *= MyShaderParameter.MyColor1;
+        OutColor *= MyShaderUniformBuffer.MyColor1;
         break;
     case 3:
-        OutColor *= MyShaderParameter.MyColor1;
+        OutColor *= MyShaderUniformBuffer.MyColor1;
         break;
     }
 }
