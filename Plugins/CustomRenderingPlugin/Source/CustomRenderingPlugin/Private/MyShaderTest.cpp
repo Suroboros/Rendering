@@ -8,6 +8,10 @@
 
 //IMPLEMENT_GLOBAL_SHADER_PARAMETER_STRUCT(FMyShaderParameterBuffer, "MyShaderUniformBuffer");
 
+TGlobalResource<FQuadVertexBuffer> QuadVertex;
+TGlobalResource<FQuadIndexBuffer> QuadIndex;
+TGlobalResource<FTextureVertexDeclaration> VertexDeclaration;
+
 //-----------------------------
 // Global Shader Class
 //-----------------------------
@@ -48,7 +52,7 @@ public:
 
 		SetUniformBufferParameterImmediate(RHICmdList, Shader, GetUniformBufferParameter<FMyShaderParameterBuffer>(), MyShaderParameter);
 		SetShaderValue(RHICmdList, Shader, SimpleColorVal, MyColor);
-		SetTextureParameter(RHICmdList, Shader, SimpleTextureVal, SimpleTextureSamplerVal, TStaticSamplerState<SF_Trilinear, AM_Clamp>::GetRHI(), MyTexture);
+		SetTextureParameter(RHICmdList, Shader, SimpleTextureVal, SimpleTextureSamplerVal, TStaticSamplerState<SF_Trilinear, AM_Clamp, AM_Clamp, AM_Clamp>::GetRHI(), MyTexture);
 	}
 
 private:
@@ -133,94 +137,6 @@ IMPLEMENT_SHADER_TYPE(, FMyShaderTestVS, TEXT("/MyShaders/Private/MyTestShader.u
 IMPLEMENT_SHADER_TYPE(, FMyShaderTestPS, TEXT("/MyShaders/Private/MyTestShader.usf"), TEXT("MainPS"), SF_Pixel)
 IMPLEMENT_SHADER_TYPE(, FMyComputeShaderTest, TEXT("/MyShaders/Private/MyTestComputeShader.usf"), TEXT("MainCS"), SF_Compute)
 
-
-//-----------------------------
-// Data struct
-//-----------------------------
-struct FTextureVertex
-{
-	FVector4    Position;
-	FVector2D   UV;
-};
-
-class FQuadVertexBuffer : public FVertexBuffer
-{
-public:
-	void InitRHI() override
-	{
-		TResourceArray<FTextureVertex, VERTEXBUFFER_ALIGNMENT> Vertices;
-		Vertices.SetNumUninitialized(6);
-		
-		// Left up
-		Vertices[0].Position = FVector4(1.0f, 1.0f, 0, 1.0f);
-		Vertices[0].UV = FVector2D(1.0f, 1.0f);
-
-		// Right up
-		Vertices[1].Position = FVector4(-1.0f, 1.0f, 0, 1.0f);
-		Vertices[1].UV = FVector2D(0, 1.0f);
-
-		// Left bottom
-		Vertices[2].Position = FVector4(1.0f, -1.0f, 0, 1.0f);
-		Vertices[2].UV = FVector2D(1.0f, 0);
-
-		// Right bottom
-		Vertices[3].Position = FVector4(-1.0f, -1.0f, 0, 1.0f);
-		Vertices[3].UV = FVector2D(0, 0);
-
-		// For the triangle optimization
-		Vertices[4].Position = FVector4(-1.0f, 1.0f, 0, 1.0f);
-		Vertices[4].UV = FVector2D(-1.0f, 1.0f);
-
-		Vertices[5].Position = FVector4(1.0f, -1.0f, 0, 1.0f);
-		Vertices[5].UV = FVector2D(1.0f, -1.0f);
-
-		FRHIResourceCreateInfo CreateInfo(&Vertices);
-		VertexBufferRHI = RHICreateVertexBuffer(Vertices.GetResourceDataSize(), BUF_Static, CreateInfo);
-	}
-};
-
-class FQuadIndexBuffer : public FIndexBuffer
-{
-public:
-	void InitRHI() override
-	{
-		const uint16 Indices[] = { 0, 1, 2, 2, 1, 3, 0, 4, 5 };
-
-		TResourceArray<uint16, INDEXBUFFER_ALIGNMENT> IndexBuffer;
-		uint32 IndicesCount = UE_ARRAY_COUNT(Indices);
-		IndexBuffer.AddUninitialized(IndicesCount);
-		FMemory::Memcpy(IndexBuffer.GetData(), Indices, IndicesCount * sizeof(uint16));
-
-		// Create index buffer.
-		FRHIResourceCreateInfo CreateIndexInfo(&IndexBuffer);
-		IndexBufferRHI = RHICreateIndexBuffer(sizeof(uint16), IndexBuffer.GetResourceDataSize(), BUF_Static, CreateIndexInfo);
-	}
-};
-
-class FTextureVertexDeclaration : public FRenderResource
-{
-public:
-	FVertexDeclarationRHIRef  VertexDeclarationRHI;
-
-	virtual void InitRHI() override
-	{
-		FVertexDeclarationElementList Elements;
-		uint32 Stride = sizeof(FTextureVertex);
-		Elements.Add(FVertexElement(0, STRUCT_OFFSET(FTextureVertex, Position), VET_Float2, 0, Stride));
-		Elements.Add(FVertexElement(0, STRUCT_OFFSET(FTextureVertex, UV), VET_Float2, 1, Stride));
-		VertexDeclarationRHI = RHICreateVertexDeclaration(Elements);
-	}
-
-	virtual void ReleaseRHI() override
-	{
-		VertexDeclarationRHI.SafeRelease();
-	}
-};
-
-TGlobalResource<FQuadVertexBuffer> QuadVertex;
-TGlobalResource<FQuadIndexBuffer> QuadIndex;
-TGlobalResource<FTextureVertexDeclaration> VertexDeclaration;
-
 //-----------------------------
 // Blueprint
 //-----------------------------
@@ -249,16 +165,6 @@ static void DrawMyShaderTestRenderTarget_RenderThread(FRHICommandListImmediate& 
 		FGlobalShaderMap* GlobalShaderMap = GetGlobalShaderMap(FeatureLevel);
 		TShaderMapRef<FMyShaderTestVS> VertexShader(GlobalShaderMap);
 		TShaderMapRef<FMyShaderTestPS> PixelShader(GlobalShaderMap);
-
-		// Get Data
-		//FQuadVertexBuffer quadVertex;
-		//quadVertex.InitRHI();
-		//FQuadIndexBuffer quadIndex;
-		//quadIndex.InitRHI();
-
-		// Texture vertex
-		//FTextureVertexDeclaration VertexDeclaration;
-		//VertexDeclaration.InitRHI();
 
 		// Set the graphic pipeline state.
 		FGraphicsPipelineStateInitializer GraphicsPSOInit;
